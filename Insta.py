@@ -9,6 +9,8 @@ import urllib.request
 import os
 import shutil
 from selenium.webdriver.chrome.options import Options
+import sys
+import getpass
 
 images = re.compile(r'src="https://[-\w./"]*jpg')
 
@@ -24,10 +26,10 @@ def OpenBrowser():
 
 
 def login(driver, username, password):
-    driver.get('https://www.instagram.com')
-    time.sleep(3)
-    login_button = driver.find_element(By.XPATH, '//a[@href = "/accounts/login/"]')
-    login_button.click()
+    driver.get('https://www.instagram.com/accounts/login/')
+    # time.sleep(3)
+    # login_button = driver.find_element(By.XPATH, '//a[@href = "/accounts/login/"]')
+    # login_button.click()
     time.sleep(2)
     username_elem = driver.find_element_by_xpath('//*[@name="username"]')
     username_elem.clear()
@@ -39,7 +41,7 @@ def login(driver, username, password):
 
 
 def LoadAccount(account_name):
-    driver.get('https://www.instagram.com\\' + account_name)
+    driver.get('https://www.instagram.com/' + account_name)
     scroll_pause = 1
     last_height = driver.execute_script("return document.body.scrollHeight")
     big_list = []
@@ -59,17 +61,29 @@ def LoadAccount(account_name):
 
 
 def SaveImages(big_list):
-    os.mkdir(account_name)
+    if not os.path.exists(account_name):
+        os.mkdir(account_name)
     urllib.request.urlretrieve(big_list[0][5:], account_name + '\\' + account_name + '.jpg')
     count = len(big_list) - 1
     for item in big_list:
         if count != len(big_list) - 1:
             urllib.request.urlretrieve(item[5:], account_name + '\\' + str(count + 1) + '.jpg')
         count -= 1
+    shutil.make_archive(account_name, 'zip', account_name)
 
 
-driver = OpenBrowser()
-login(driver, '', '')
-account_name = 'vishnugt95'
-big_list = LoadAccount(account_name)
-SaveImages(big_list)
+if __name__ == "__main__":
+    driver = OpenBrowser()
+    account_name = str(sys.argv[1])
+    big_list = LoadAccount(account_name)
+    if len(big_list) == 1:
+        response = input('Its a private account, do you want to download with your credentials?')
+        if response == 'y':
+            username = input('Enter username: ')
+            password = getpass.getpass('Enter password: ')
+            login(driver, username, password)
+            big_list = LoadAccount(account_name)
+        else:
+            print('Sorry Creep')
+            exit()
+    SaveImages(big_list)
