@@ -1,18 +1,25 @@
 # Instagram Album?
 
 import time
-import selenium
 import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import urllib.request
+import os
+import shutil
+from selenium.webdriver.chrome.options import Options
 
 images = re.compile(r'src="https://[-\w./"]*jpg')
 
 
 def OpenBrowser():
     driver = webdriver.Firefox()
+    # chrome_options = Options()
+    # chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--window-size=1920x1080")
+    # chrome_driver = os.getcwd() + "\\chromedriver.exe"
+    # driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_driver)
     return driver
 
 
@@ -40,26 +47,29 @@ def LoadAccount(account_name):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(scroll_pause)
         new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            break
         last_height = new_height
         html_source = driver.page_source
         pics = re.findall(images, html_source)
         for item in pics:
             if item not in big_list:
                 big_list.append(item)
+        if new_height == last_height:
+            break
     return big_list
 
 
 def SaveImages(big_list):
-    count = 1
+    os.mkdir(account_name)
+    urllib.request.urlretrieve(big_list[0][5:], account_name + '\\' + account_name + '.jpg')
+    count = len(big_list) - 1
     for item in big_list:
-        urllib.request.urlretrieve(item[5:], str(count) + '.jpg')
-        count += 1
+        if count != len(big_list) - 1:
+            urllib.request.urlretrieve(item[5:], account_name + '\\' + str(count + 1) + '.jpg')
+        count -= 1
 
 
 driver = OpenBrowser()
-login(driver, 'your_username', 'your_password')
-account_name = 'target_user_name_here'
+login(driver, '', '')
+account_name = 'vishnugt95'
 big_list = LoadAccount(account_name)
 SaveImages(big_list)
