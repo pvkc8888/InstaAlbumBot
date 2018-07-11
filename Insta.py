@@ -3,7 +3,6 @@
 import time
 import re
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import urllib.request
 import os
@@ -54,7 +53,7 @@ def LoadAccount(account_name):
         pics = re.findall(images, html_source)
         for item in pics:
             if item not in big_list:
-                big_list.append(item)
+                big_list.append(item[5:])
         if new_height == last_height:
             break
     return big_list
@@ -63,13 +62,13 @@ def LoadAccount(account_name):
 def SaveImages(big_list):
     if not os.path.exists(account_name):
         os.mkdir(account_name)
-    urllib.request.urlretrieve(big_list[0][5:], account_name + '\\' + account_name + '.jpg')
+    urllib.request.urlretrieve(big_list[0], account_name + '\\' + account_name + '.jpg')
     count = len(big_list) - 1
     for item in big_list:
         if count != len(big_list) - 1:
-            urllib.request.urlretrieve(item[5:], account_name + '\\' + str(count + 1) + '.jpg')
+            urllib.request.urlretrieve(item, account_name + '\\' + str(count + 1) + '.jpg')
         count -= 1
-    shutil.make_archive(account_name, 'zip', account_name)
+    #shutil.make_archive(account_name, 'zip', account_name)
 
 
 if __name__ == "__main__":
