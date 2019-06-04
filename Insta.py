@@ -68,7 +68,7 @@ def SaveImages(big_list):
         if count != len(big_list) - 1:
             urllib.request.urlretrieve(item, account_name + '\\' + str(count + 1) + '.jpg')
         count -= 1
-    #shutil.make_archive(account_name, 'zip', account_name)
+    # shutil.make_archive(account_name, 'zip', account_name)
 
 
 if __name__ == "__main__":
