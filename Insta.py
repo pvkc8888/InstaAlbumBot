@@ -56,6 +56,7 @@ def LoadAccount(account_name):
                 big_list.append(item[5:])
         if new_height == last_height:
             break
+    print(big_list)
     return big_list
 
 
